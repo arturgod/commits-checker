@@ -1,0 +1,9 @@
+/node_modules
+
+# User-specific stuff:
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/dictionaries
+
+/node_modules
+/repo-tmp

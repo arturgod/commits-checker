@@ -4,6 +4,7 @@ const util = require('util')
 const path = './repo-tmp';
 const repoUrl = 'https://github.com/arturgod/monorepo.git';
 const fs_writeFile = util.promisify(fs.writeFile)
+const fs_readFile = util.promisify(fs.readFile)
 // works
 // git()
 //   .silent(false)
@@ -77,50 +78,56 @@ git(path)
     (err, status) =>{
       branch = status.current;
     // console.log(status.current);
-    })
-    .log(
-      (err, log) => {
-        // console.log('logzzz', logz);
-      logz = log;
-      const logString = JSON.stringify(logz);
-      const b = fs.readFile(`logz-master.json`, {encoding: 'utf-8'}, function(err,data){
-        if (!err) {
-            console.log('received data1: ' + data);
-            
-        } else {
-            console.log(err);
-        }
+  })
+  .log(
+    (err, log) => {
+    // console.log('logzzz', logz);
+    logz = log;
+    const logString = JSON.stringify(logz);
+    const b = fs_readFile(`logz-master.json`, {encoding: 'utf-8'}, function(err,data){
+      if (err) {
+        console.log(err);       
+      } else {
+        console.log('received data1: ' + data);
         const a=  fs_writeFile(`logz-${branch}.json`, logString, function(err) {
-        if(err) {
-            console.log(err);
-        } 
+          if(err) {
+              console.log(err);
+          } 
+        })
         a.then(
           ()=>{
-            const b = fs.readFile(`logz-master.json`, {encoding: 'utf-8'}, function(err,data){
+            const c = fs_readFile(`logz-master.json`, {encoding: 'utf-8'}, function(err,data){
               if (!err) {
-                  console.log('received data 2: ' + data);
-                  
+                  console.log('received data 2: ' + data);              
               } else {
                   console.log(err);
               }
-            })
+            });
+            c.then(
+              (suc)=>{
+                console.log('b suc', suc)
+              },
+              (error)=>{
+                console.log('b error', error)
+              }
+            )
           }
         )
-      });
-      })
-      
-      
-      }  
-    )
-    .then (
-      ()=> {
-        // console.log(logz)
-        console.log('logstttt')
-        const b = fs.readFile(`logz-master.json`, {encoding: 'utf-8'}, function(err, data){
-          console.log('data;;;')
-          console.log(data)
-          ////"aaaa":"ssssssss",
-        })
-        
       }
+    });
+    console.log(b)
+    b.then(  
+      console.log('b then')
+    )//b.then
+    .catch(
+      (err)=>console.log('errrrr', err)
     )
+    console.log(b)
+
+    }
+  )
+  .then(
+    ()=>{
+      console.log('then po .log')
+    }
+  );

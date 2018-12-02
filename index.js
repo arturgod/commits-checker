@@ -46,13 +46,14 @@ const fs_readFile = util.promisify(fs.readFile)
 
 let logz;
 let branch;
-const readFilePromise = function(){
+const logSince = '2018-11-30';
+const readFilePromise = function(file){
   return new Promise(
     (resolve, reject) => {
-      fs.readFile(`logz-master.json`, {encoding: 'utf-8'}, function(err,data){
+      fs.readFile(file, {encoding: 'utf-8'}, function(err,data){
         if(err) {reject(err)}
         else {
-          console.log('reading: ', data);
+          console.log('read: ', data);
           resolve(data)
         }
       }  
@@ -80,10 +81,15 @@ git(path)
       branch = status.current;
   })
   .log(
+    {'--since': logSince},
     (err, log) => {
       logz = JSON.stringify(log);
     }
   )
+  //that 'then' below is method of git(), i doubt it returns a promise coz it doesn't have 'catch'
   .then(
     ()=>writeFilePromise(`logz-${branch}.json`, logz)
+  )
+  .then(
+    (data)=>readFilePromise(`logz-${branch}.json`)
   );
